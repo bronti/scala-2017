@@ -3,6 +3,9 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'scala'
+apply plugin: 'application'
+
+mainClassName = "ru.spbau.jvm.scala.calculator.Main"
 
 sourceCompatibility = 1.8
 
@@ -12,6 +15,14 @@ repositories {
 
 def scalaMajor = "2.12"
 def scalaMinor = "3"
+
+sourceSets {
+    test {
+        resources {
+            srcDir "src/test"
+        }
+    }
+}
 
 dependencies {
     compile(
@@ -25,7 +36,7 @@ dependencies {
 jar {
     baseName = project.name
     manifest {
-        attributes("Main-Class": "ru.spbau.jvm.scala.calculator.Main")
+        attributes("Main-Class": mainClassName)
     }
 }
 
