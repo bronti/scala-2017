@@ -42,7 +42,9 @@ object Main {
     breakable {
       while (true) {
         try {
-          val tokens = lexer.tokenize(StdIn.readLine("> "))
+          val line = StdIn.readLine("> ")
+          if (line == null) break
+          val tokens = lexer.tokenize(line)
           if (tokens.nonEmpty) {
             try {
               val result = interpreter.parse(tokens)
