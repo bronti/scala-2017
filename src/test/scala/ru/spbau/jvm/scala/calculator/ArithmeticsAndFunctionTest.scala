@@ -1,62 +1,62 @@
 package ru.spbau.jvm.scala.calculator
 
 import org.junit.{Assert, Test}
-import ru.spbau.jvm.scala.calculator.Main.{unaryOpsRules, functionRules, innerBinOpsRules, outerBinOpsRules}
+import ru.spbau.jvm.scala.calculator.Main.{unaryOps, functions, innerBinOps, outerBinOps}
 
 class ArithmeticsAndFunctionTest {
 
-  def getInterpreter = new Interpreter(unaryOpsRules, List(outerBinOpsRules, innerBinOpsRules), functionRules)
+  def getInterpreter = new Interpreter(unaryOps, List(outerBinOps, innerBinOps), functions)
 
   @Test
   def testSum(): Unit = {
     Assert.assertEquals(8 + 9, getInterpreter.parse(List(
-      new Number(8),
-      new Arithmetic('+'),
-      new Number(9)
+      Number(8),
+      Arithmetic('+'),
+      Number(9)
     )), 1e-5)
   }
 
   @Test
   def testDiff(): Unit = {
     Assert.assertEquals(8 - 9, getInterpreter.parse(List(
-      new Number(8),
-      new Arithmetic('-'),
-      new Number(9)
+      Number(8),
+      Arithmetic('-'),
+      Number(9)
     )), 1e-5)
   }
 
   @Test
   def testMult(): Unit = {
     Assert.assertEquals(8 * 9, getInterpreter.parse(List(
-      new Number(8),
-      new Arithmetic('*'),
-      new Number(9)
+      Number(8),
+      Arithmetic('*'),
+      Number(9)
     )), 1e-5)
   }
 
   @Test
   def testDiv(): Unit = {
     Assert.assertEquals(8.0 / 9.0, getInterpreter.parse(List(
-      new Number(8),
-      new Arithmetic('/'),
-      new Number(9)
+      Number(8),
+      Arithmetic('/'),
+      Number(9)
     )), 1e-5)
   }
 
   @Test
   def testUnaryMinus(): Unit = {
     Assert.assertEquals(- 9.0, getInterpreter.parse(List(
-      new Arithmetic('-'),
-      new Number(9)
+      Arithmetic('-'),
+      Number(9)
     )), 1e-5)
   }
 
   @Test
   def testLog(): Unit = {
     Assert.assertEquals(Math.log(8.0), getInterpreter.parse(List(
-      new Function("log"),
+      Function("log"),
       OPEN_PAREN,
-      new Number(8),
+      Number(8),
       CLOSE_PAREN
     )), 1e-5)
   }
@@ -64,9 +64,9 @@ class ArithmeticsAndFunctionTest {
   @Test
   def testSin(): Unit = {
     Assert.assertEquals(Math.sin(8), getInterpreter.parse(List(
-      new Function("sin"),
+      Function("sin"),
       OPEN_PAREN,
-      new Number(8),
+      Number(8),
       CLOSE_PAREN
     )), 1e-5)
   }
@@ -74,9 +74,9 @@ class ArithmeticsAndFunctionTest {
   @Test
   def testCos(): Unit = {
     Assert.assertEquals(Math.cos(8.0), getInterpreter.parse(List(
-      new Function("cos"),
+      Function("cos"),
       OPEN_PAREN,
-      new Number(8),
+      Number(8),
       CLOSE_PAREN
     )), 1e-5)
   }
