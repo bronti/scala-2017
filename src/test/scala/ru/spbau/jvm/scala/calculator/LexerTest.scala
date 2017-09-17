@@ -5,7 +5,7 @@ import ru.spbau.jvm.scala.calculator.Main._
 
 class LexerTest {
 
-  def getLexer = new Lexer((outerBinOps ++ innerBinOps).map({ pr => pr._1 }), functions.map({ pr => pr._1 }))
+  def getLexer = new Lexer(outerBinOps.keySet ++ innerBinOps.keySet ++ unaryOps.keySet, functions.keySet)
 
   @Test
   def testSimple(): Unit = {
@@ -16,14 +16,14 @@ class LexerTest {
   def testNumber(): Unit = {
     val result = getLexer.tokenize("8")
     Assert.assertTrue(result.length == 1)
-    Assert.assertTrue(result.head == new Number(8))
+    Assert.assertTrue(result.head == Number(8))
   }
 
   @Test
   def testFunction(): Unit = {
     val result = getLexer.tokenize("log")
     Assert.assertTrue(result.length == 1)
-    Assert.assertTrue(result.head == new Function("log"))
+    Assert.assertTrue(result.head == Function("log"))
   }
 
   @Test
@@ -40,7 +40,7 @@ class LexerTest {
   def testArithmetic(): Unit = {
     val result = getLexer.tokenize("+")
     Assert.assertTrue(result.length == 1)
-    Assert.assertTrue(result.head == new Arithmetic('+'))
+    Assert.assertTrue(result.head == Arithmetic('+'))
   }
 
   @Test(expected = classOf[LexerException])
@@ -57,16 +57,16 @@ class LexerTest {
   def testNumberBuffer(): Unit = {
     val result = getLexer.tokenize("123")
     Assert.assertTrue(result.length == 1)
-    Assert.assertTrue(result.head == new Number(123))
+    Assert.assertTrue(result.head == Number(123))
   }
 
   @Test
   def testBufferBetweenTokens(): Unit = {
     val result = getLexer.tokenize("+123-")
     Assert.assertTrue(result.length == 3)
-    Assert.assertTrue(result.head == new Arithmetic('+'))
-    Assert.assertTrue(result(1) == new Number(123))
-    Assert.assertTrue(result(2) == new Arithmetic('-'))
+    Assert.assertTrue(result.head == Arithmetic('+'))
+    Assert.assertTrue(result(1) == Number(123))
+    Assert.assertTrue(result(2) == Arithmetic('-'))
   }
 
   @Test
@@ -74,8 +74,8 @@ class LexerTest {
     val result = getLexer.tokenize(" +      123" +
       "  - ")
     Assert.assertTrue(result.length == 3)
-    Assert.assertTrue(result.head == new Arithmetic('+'))
-    Assert.assertTrue(result(1) == new Number(123))
-    Assert.assertTrue(result(2) == new Arithmetic('-'))
+    Assert.assertTrue(result.head == Arithmetic('+'))
+    Assert.assertTrue(result(1) == Number(123))
+    Assert.assertTrue(result(2) == Arithmetic('-'))
   }
 }
