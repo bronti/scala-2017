@@ -1,0 +1,51 @@
+group 'ru.spbau.jvm.scala.calculator'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'scala'
+apply plugin: 'application'
+
+mainClassName = "ru.spbau.jvm.scala.calculator.Main"
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+def scalaMajor = "2.12"
+def scalaMinor = "3"
+
+sourceSets {
+    test {
+        resources {
+            srcDir "src/test"
+        }
+    }
+}
+
+dependencies {
+    compile(
+            [group: 'org.scala-lang', name: 'scala-compiler', version: "$scalaMajor.$scalaMinor"],
+            [group: 'org.scala-lang', name: 'scala-library', version: "$scalaMajor.$scalaMinor"],
+    )
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// Specifying the main class for the 'application' plugin
+jar {
+    baseName = project.name
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}
+
+// Workaround for Gradle 3.+ and IDEA (https://discuss.gradle.org/t/idea-integration-with-scala-plugin-broken-since-gradle-3-0-no-such-property-daemonserver/19159/2)
+ScalaCompileOptions.metaClass.daemonServer = true
+ScalaCompileOptions.metaClass.fork = true
+ScalaCompileOptions.metaClass.useAnt = false
+ScalaCompileOptions.metaClass.useCompileDaemon = false
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-unchecked", "-deprecation", "-feature", "-Xfatal-warnings", "-encoding", "utf8"]
+}
