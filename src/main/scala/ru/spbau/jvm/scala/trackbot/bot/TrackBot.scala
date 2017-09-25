@@ -46,11 +46,11 @@ class TrackBot(val token: String, val database: ActorRef) extends TelegramBot wi
         MessageParser.parse(text) match {
           case AddTrackNumber(track) => handleTrackAddition(track, verboseDatabase = true)
           case ShowAllTracks =>
-            (database ? GetAllTracks(message.chat.id)).onComplete {
-              case Success(AllTracks(tracks)) =>
-                tracks.foreach { track => handleTrackAddition(track, verboseDatabase = false) }
-              case _ => replyWithFormatting("Ошибка базы данных :(")
-            }
+            doForAllStoredTracksOrHandleError(
+              message.chat.id,
+              { (_, track) => handleTrackAddition(track, verboseDatabase = false) },
+              { replyWithFormatting("Ошибка базы данных :(") }
+            )
           case WrongMessage => replyWithFormatting("Неверная команда :(")
         }
       }
@@ -109,7 +109,7 @@ class TrackBot(val token: String, val database: ActorRef) extends TelegramBot wi
   }
 
   private def doForAllStoredTracksWithUpdatedData(handleTrack: (Long, String, Option[String], ResponseData) => Unit): Unit
-  = doForAllStoredTracks { (id, track) =>
+  = doForAllStoredTracksForAllIds { (id, track) =>
     Track24.getTrackInfo(track) match {
       case JSONResponse(content) =>
         content match {
@@ -124,10 +124,16 @@ class TrackBot(val token: String, val database: ActorRef) extends TelegramBot wi
     }
   }
 
-  private def doForAllStoredTracks(handleTrack: (Long, String) => Unit): Unit = doForAllIds { id =>
+  private def doForAllStoredTracksForAllIds(handleTrack: (Long, String) => Unit): Unit = doForAllIds {
+    doForAllStoredTracksOrHandleError(_, handleTrack, { () => })
+  }
+
+  private def doForAllStoredTracksOrHandleError(id: Long,
+                                                handleTrack: (Long, String) => Unit,
+                                                handleError: => Unit): Unit = {
     (database ? GetAllTracks(id)).onComplete {
       case Success(AllTracks(tracks)) => tracks.foreach { track => handleTrack(id, track) }
-      case _ =>
+      case _ => handleError
     }
   }
 

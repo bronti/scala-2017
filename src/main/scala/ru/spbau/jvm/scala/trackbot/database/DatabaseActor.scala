@@ -56,8 +56,7 @@ class DatabaseActor extends PersistentActor {
   }
 
   override def receiveCommand: Receive = {
-//    case evt: Event => persist(evt)(receiveEvent) //todo:
-    case evt: Event => receiveEvent(evt)
+    case evt: Event => persist(evt)(receiveEvent)
     case que: Query => sender ! receiveQuery(que)
   }
 
