@@ -27,7 +27,7 @@ class DatabaseActor extends PersistentActor {
           activeTracks(id)(track) = None
         }
         toBeDeletedTracks(id)(track) = false
-      case CleanTracks => 
+      case CleanTracks =>
         for (id <- toBeDeletedTracksMap.keys) {
           val toDelete = toBeDeletedTracks(id).filter { _._2 }.keys.toList
           // delete marked tracks
@@ -56,7 +56,8 @@ class DatabaseActor extends PersistentActor {
   }
 
   override def receiveCommand: Receive = {
-    case evt: Event => persist(evt)(receiveEvent)
+//    case evt: Event => persist(evt)(receiveEvent) //todo:
+    case evt: Event => receiveEvent(evt)
     case que: Query => sender ! receiveQuery(que)
   }
 

@@ -13,8 +13,10 @@ class MessageParser extends RegexParsers {
   private val wordParser: Parser[String] = raw"\S+".r
 
   private val addTrackNumber: Parser[AddTrackNumber] = "[Оо]тслеживай".r ~> wordParser ^^ AddTrackNumber
+  private val showAllTracks: Parser[UserMessage] = "[Пп]окажи мои треки".r ^^ { _ => ShowAllTracks }
 
-  val userMessage: Parser[UserMessage] = addTrackNumber
+  val userMessage: Parser[UserMessage] = addTrackNumber | showAllTracks
+  // todo : help
 }
 
 object MessageParser extends MessageParser {

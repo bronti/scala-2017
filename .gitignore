@@ -18,4 +18,4 @@ project/plugins/project/
 .idea
 
 # custom
-bot.token
+project/LocalSettings.scala

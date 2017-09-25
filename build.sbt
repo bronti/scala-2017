@@ -11,5 +11,7 @@ libraryDependencies ++= Seq(
   "com.enragedginger" %% "akka-quartz-scheduler" % "1.6.0-akka-2.4.x",
   "org.iq80.leveldb" % "leveldb" % "0.7",
   "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8",
-  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+  "org.apache.httpcomponents" % "fluent-hc" % "4.5.3",
+  "com.google.code.gson" % "gson" % "2.8.1"
 )
