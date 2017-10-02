@@ -48,9 +48,9 @@ case object EmptyImmutableMultiSet extends ImmutableMultiSet[Nothing] {
 
   override def flatMap[B](mapper: (Nothing) => ImmutableMultiSet[B]): ImmutableMultiSet[Nothing] = EmptyImmutableMultiSet
 
-  def fold[B >: Nothing](ini: B)(op: (B, Nothing) => B): B = ini
+  override def fold[B >: Nothing](ini: B)(op: (B, Nothing) => B): B = ini
 
-  def foreach(func : Nothing => Unit) : Unit = ()
+  override def foreach(func : Nothing => Unit) : Unit = ()
 
   override def apply[B >: Nothing](elem: B): Int = 0
 
@@ -82,7 +82,7 @@ case class NodeImmutableMultiSet[+A](
 
   override def fold[B >: A](ini: B)(op: (B, A) => B): B = op(tail.fold(ini)(op), head)
 
-  def foreach(func : A => Unit): Unit = {
+  override def foreach(func : A => Unit): Unit = {
     func(head)
     tail.foreach(func)
   }
