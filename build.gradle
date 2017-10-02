@@ -1,0 +1,39 @@
+group 'ru.spbau.jvm.scala.multiset'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'scala'
+
+sourceCompatibility = 1.8
+def scalaMajor = "2.12"
+def scalaMinor = "3"
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    test {
+        resources {
+            srcDir "src/test"
+        }
+    }
+}
+
+dependencies {
+    compile(
+            [group: 'org.scala-lang', name: 'scala-compiler', version: "$scalaMajor.$scalaMinor"],
+            [group: 'org.scala-lang', name: 'scala-library', version: "$scalaMajor.$scalaMinor"],
+    )
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// Workaround for Gradle 3.+ and IDEA (https://discuss.gradle.org/t/idea-integration-with-scala-plugin-broken-since-gradle-3-0-no-such-property-daemonserver/19159/2)
+ScalaCompileOptions.metaClass.daemonServer = true
+ScalaCompileOptions.metaClass.fork = true
+ScalaCompileOptions.metaClass.useAnt = false
+ScalaCompileOptions.metaClass.useCompileDaemon = false
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-unchecked", "-deprecation", "-feature", "-Xfatal-warnings", "-encoding", "utf8"]
+}
