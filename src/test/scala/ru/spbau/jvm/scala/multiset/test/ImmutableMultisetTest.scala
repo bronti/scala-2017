@@ -40,11 +40,38 @@ class ImmutableMultisetTest {
   @Test
   def matchTest(): Unit = {
     ImmutableMultiSet(1, 2, 3) match {
-      case ImmutableMultiSet() => Assert.fail()
-      case ImmutableMultiSet(1, 2) => Assert.fail()
-      case ImmutableMultiSet(1, 2, 3, 4) => Assert.fail()
       case ImmutableMultiSet(1, 2, 3) =>
+      case _ => Assert.fail()
     }
+  }
+
+  @Test
+  def matchEmptyTest(): Unit = {
+    ImmutableMultiSet() match {
+      case ImmutableMultiSet() =>
+      case _ => Assert.fail()
+    }
+  }
+
+  @Test
+  def intersectTest(): Unit = {
+    Assert.assertEquals(ImmutableMultiSet(), ImmutableMultiSet(1, 2) & ImmutableMultiSet(3, 4))
+    Assert.assertEquals(ImmutableMultiSet(), ImmutableMultiSet() & ImmutableMultiSet(3, 4))
+    Assert.assertEquals(ImmutableMultiSet(1), ImmutableMultiSet(1) & ImmutableMultiSet(3, 1, 4))
+    Assert.assertEquals(ImmutableMultiSet(1, 1, 1), ImmutableMultiSet(1, 2, 1, 1) & ImmutableMultiSet(1, 3, 1, 4, 1))
+    Assert.assertEquals(1, (ImmutableMultiSet(1, 2) & ImmutableMultiSet(1, 2, 3))(1))
+    Assert.assertEquals(1, (ImmutableMultiSet(1, 2) & ImmutableMultiSet(1, 2, 3))(2))
+    Assert.assertEquals(2, (ImmutableMultiSet(1, 2) & ImmutableMultiSet(1, 2, 3)).size)
+  }
+
+  @Test
+  def unionTest(): Unit = {
+    Assert.assertEquals(ImmutableMultiSet(1, 1, 1), ImmutableMultiSet(1) | ImmutableMultiSet(1, 1))
+    Assert.assertEquals(ImmutableMultiSet(1), ImmutableMultiSet(1) | ImmutableMultiSet())
+    Assert.assertEquals(ImmutableMultiSet(), ImmutableMultiSet() | ImmutableMultiSet())
+    Assert.assertEquals(1, (ImmutableMultiSet(1) | ImmutableMultiSet(2))(1))
+    Assert.assertEquals(1, (ImmutableMultiSet(1) | ImmutableMultiSet(2))(2))
+    Assert.assertEquals(2, (ImmutableMultiSet(1) | ImmutableMultiSet(2)).size)
   }
 
 }

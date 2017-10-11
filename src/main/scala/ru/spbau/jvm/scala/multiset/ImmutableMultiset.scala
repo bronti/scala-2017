@@ -19,8 +19,6 @@ trait ImmutableMultiSet[+A] {
 
   def *(times: Int): ImmutableMultiSet[A]
 
-  def +[B >: A](other: ImmutableMultiSet[B]): ImmutableMultiSet[B]
-
   def find[B >: A](elem: B): Option[B]
 
   def size: Int
@@ -33,11 +31,11 @@ object ImmutableMultiSet {
     }
   }
 
-  def unapplySeq[A](set: ImmutableMultiSet[A]): Option[Seq[A]] = { set match {
-      case EmptyImmutableMultiSet => None
-      case NodeImmutableMultiSet(head, tail) => Some(Seq(head) ++ unapplySeq(tail).getOrElse(Seq.empty))
-    }
+  def unapplySeq[A](set: ImmutableMultiSet[A]): Option[Seq[A]] = set match {
+    case EmptyImmutableMultiSet => Some(Seq())
+    case NodeImmutableMultiSet(head, tail) => Some(Seq(head) ++ unapplySeq(tail).getOrElse(Seq.empty))
   }
+
 }
 
 case object EmptyImmutableMultiSet extends ImmutableMultiSet[Nothing] {
@@ -56,11 +54,9 @@ case object EmptyImmutableMultiSet extends ImmutableMultiSet[Nothing] {
 
   override def &[B >: Nothing](other: ImmutableMultiSet[B]): ImmutableMultiSet[B] = EmptyImmutableMultiSet
 
-  override def |[B >: Nothing](other: ImmutableMultiSet[B]): ImmutableMultiSet[B] = EmptyImmutableMultiSet
+  override def |[B >: Nothing](other: ImmutableMultiSet[B]): ImmutableMultiSet[B] = other
 
   override def *(times: Int): ImmutableMultiSet[Nothing] = EmptyImmutableMultiSet
-
-  override def +[B >: Nothing](other: ImmutableMultiSet[B]): ImmutableMultiSet[B] = other
 
   override def find[B >: Nothing](elem: B) : Option[Nothing] = None
 
@@ -78,7 +74,7 @@ case class NodeImmutableMultiSet[+A](
 
   override def map[B](mapper: A => B): ImmutableMultiSet[B] = NodeImmutableMultiSet(mapper(head), tail.map(mapper))
 
-  override def flatMap[B](mapper: A => ImmutableMultiSet[B]): ImmutableMultiSet[B] = tail.flatMap(mapper) + mapper(head)
+  override def flatMap[B](mapper: A => ImmutableMultiSet[B]): ImmutableMultiSet[B] = tail.flatMap(mapper) | mapper(head)
 
   override def fold[B >: A](ini: B)(op: (B, A) => B): B = op(tail.fold(ini)(op), head)
 
@@ -94,21 +90,16 @@ case class NodeImmutableMultiSet[+A](
 
   override def &[B >: A](other: ImmutableMultiSet[B]): ImmutableMultiSet[B] = {
     val count = Math.min(other(head), this(head))
-    ImmutableMultiSet(head) * count + (this.filter { !_.equals(head) } & other.filter { !_.equals(head) })
+    ImmutableMultiSet(head) * count | (this.filter { !_.equals(head) } & other.filter { !_.equals(head) })
   }
 
   override def |[B >: A](other: ImmutableMultiSet[B]): ImmutableMultiSet[B] = {
-    val count = other(head) + this(head)
-    ImmutableMultiSet(head) * count + (this.filter { !_.equals(head) } & other.filter { !_.equals(head) })
+    NodeImmutableMultiSet(head, tail | other)
   }
 
   override def *(times: Int): ImmutableMultiSet[A] = {
     if (times == 0) EmptyImmutableMultiSet
-    else this * (times - 1) + this
-  }
-
-  override def +[B >: A](other: ImmutableMultiSet[B]): ImmutableMultiSet[B] = {
-    NodeImmutableMultiSet(head, tail + other)
+    else this * (times - 1) | this
   }
 
   override def find[B >: A](elem: B): Option[B] = {
